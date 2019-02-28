@@ -2,9 +2,51 @@ const express = require('express');
 const app = express();
 const childProcess = require('child_process');
 
-var p = childProcess.spawn('java', ['-jar', './server.jar'],{cwd: './mc'});
-p.stdout.on('data', data => console.log(`stdout: ${data}`));
-p.stderr.on('data', data => console.error(`stderr: ${data}`));
+// Regexes
+const regexDone = /Done.\(.+\)!/;
+const regexList = /There are \d+ of a max \d+ players online:/;
+
+// OutputFunctions
+const stdout = text => process.stdout.write(`mc:${text}`);
+const stderr = text => process.stdout.write(`mcerr:${text}`);
+
+// Variables
+let isInitialized = false;
+
+let mc = null;
+let listInterval = null;
+
+// Events
+const onInitialized = () => {
+    isInitialized = true;
+    listInterval = setInterval(() => {
+        mc.stdin.write('list\n');
+    }, 1000);
+};
+
+//
+// main
+//
+const main = () => {
+    mc = childProcess.spawn('java', ['-jar', './server.jar'], {cwd: './mc'});
+
+    mc.stdout.on('data', data => {
+        if (regexDone.test(data))
+        {
+            onInitialized();
+        }
+
+        stdout(data);
+    });
+
+    mc.stderr.on('data', data => {
+        stderr(data);
+    });
+
+
+};
+
+main();
 
 // app.get('/', (req, res) => res.send('Hello World!'))
 
