@@ -5,6 +5,7 @@ const childProcess = require('child_process');
 // Regexes
 const regexDone = /Done.\(.+\)!/;
 const regexList = /There are \d+ of a max \d+ players online:/;
+const regexGetPlayersNumber = /(?<=There are )\d+(?= of a max)/;
 
 // OutputFunctions
 const stdout = text => process.stdout.write(`mc:${text}`);
@@ -12,9 +13,9 @@ const stderr = text => process.stdout.write(`mcerr:${text}`);
 
 // Variables
 let isInitialized = false;
-
 let mc = null;
 let listInterval = null;
+let lastPlayerNumber = 0;
 
 // Events
 const onInitialized = () => {
@@ -22,6 +23,11 @@ const onInitialized = () => {
     listInterval = setInterval(() => {
         mc.stdin.write('list\n');
     }, 1000);
+};
+
+const onReceivedPlayerList = text => {
+    const results = regexGetPlayersNumber.exec(text);
+    lastPlayerNumber = results[0];
 };
 
 //
@@ -34,6 +40,10 @@ const main = () => {
         if (regexDone.test(data))
         {
             onInitialized();
+        }
+
+        if (regexList.test(data)) {
+            onReceivedPlayerList(data);
         }
 
         stdout(data);
