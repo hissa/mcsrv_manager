@@ -1,0 +1,8 @@
+srv:
+  build: ./srv/
+  command: /bin/ash
+  tty: true
+  ports: 
+    - "3000:3000"
+  volumes: 
+    - "./srv/mnt:/app/"
