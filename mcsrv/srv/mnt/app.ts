@@ -4,6 +4,16 @@ import { ChildProcess } from 'child_process';
 
 const app = express();
 
+app.get('/', (req, res) => {
+    res.contentType('application/json');
+    res.send({ count: mcsrv.playersNumber });
+});
+
+app.delete('/', (req, res) => {
+    mcsrv.stop();
+    res.sendStatus(200);
+});
+
 const mcsrv = new Minecraft(() => {
     const cp = require('child_process');
     return cp.spawn(
@@ -13,9 +23,9 @@ const mcsrv = new Minecraft(() => {
     );
 });
 
-const main = () => {
-    mcsrv.onReceivedStdio = msg => process.stdout.write('mc:' + msg);
-    mcsrv.start();
-};
+mcsrv.onReceivedStdio = msg => process.stdout.write('mc:' + msg);
+mcsrv.onReceivedStderr = msg => process.stdout.write('mcerr:' + msg);
+mcsrv.onClosed = () => setTimeout(() => process.exit(), 500);
 
-main();
+mcsrv.start();
+app.listen(3000);

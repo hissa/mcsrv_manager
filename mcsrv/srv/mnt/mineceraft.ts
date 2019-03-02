@@ -1,5 +1,11 @@
 import { ChildProcess } from "child_process";
 
+export enum States {
+    Starting,
+    Running,
+    Stopping
+}
+
 export class Minecraft
 {
     get gettingPlayersInterval()
@@ -25,7 +31,7 @@ export class Minecraft
         return this._isInitialized;
     }
 
-    get lastPlayersNumber()
+    get playersNumber()
     {
         return this._lastPlayersNumber;
     }
@@ -45,9 +51,20 @@ export class Minecraft
         this._onReceivedStderr = func;
     }
 
+    set onClosed(func: () => void)
+    {
+        this._onClosed = func;
+    }
+
+    get State()
+    {
+        return this._serverState;
+    }
+
     private _gettingPlayersInterval = 1000;
     private _isInitialized = false;
     private _lastPlayersNumber = 0;
+    private _serverState = States.Stopping;
     
     private intervalId: number | null = null;
     private serverProcess: ChildProcess | null = null;
@@ -82,6 +99,7 @@ export class Minecraft
     private _onInitialized: (() => void) | null = null;
     private _onReceivedStdio: ((msg: string) => void) | null = null;
     private _onReceivedStderr: ((msg: string) => void) | null = null;
+    private _onClosed: (() => void) | null = null;
 
     constructor(buildProcess: () => ChildProcess)
     {
@@ -90,6 +108,7 @@ export class Minecraft
     
     public start()
     {
+        this._serverState = States.Starting;
         if (this.buildProcess != null)
         {
             this.serverProcess = this.buildProcess();
@@ -111,6 +130,28 @@ export class Minecraft
                     this._onReceivedStderr(msg);
                 }
             });
+
+            this.serverProcess.stdout.on('close', () => {
+                if (this._onClosed != null)
+                {
+                    this._onClosed();
+                }
+            });
+        }
+    }
+
+    public stop()
+    {
+        this._serverState = States.Stopping;
+        if (this.intervalId != null)
+        {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+
+        if (this.serverProcess != null)
+        {
+            this.serverProcess.stdin.write('stop\n');
         }
     }
 
@@ -123,6 +164,7 @@ export class Minecraft
     private initialize()
     {
         this._isInitialized = true;
+        this._serverState = States.Running;
         this.intervalId = setInterval(
             this.sendPlayerListRequest,
             this._gettingPlayersInterval,
