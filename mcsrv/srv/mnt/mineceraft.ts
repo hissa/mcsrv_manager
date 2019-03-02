@@ -4,7 +4,7 @@ export enum States {
     Starting,
     Running,
     Stopping
-}
+};
 
 export class Minecraft
 {

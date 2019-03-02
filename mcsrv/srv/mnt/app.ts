@@ -1,12 +1,21 @@
 import express from 'express';
-import { Minecraft } from './mineceraft';
+import { Minecraft, States } from './mineceraft';
 import { ChildProcess } from 'child_process';
+
+const stateTexts = [
+    'starting',
+    'running',
+    'stopping'
+];
 
 const app = express();
 
 app.get('/', (req, res) => {
     res.contentType('application/json');
-    res.send({ count: mcsrv.playersNumber });
+    res.send({ 
+        count: mcsrv.playersNumber,
+        state: stateTexts[mcsrv.State]
+    });
 });
 
 app.delete('/', (req, res) => {
