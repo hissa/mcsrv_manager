@@ -28,7 +28,7 @@ functions:
     handler: get_info.get
     environment:
       TZ: 'Asia/Tokyo'
-      SRV_URL: 'http://localhost:3000'
+      SRV_URL: 'http://18.182.15.11:3000'
     events:
       - http:
           method: get
