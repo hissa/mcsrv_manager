@@ -1,5 +1,4 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { stringify } from 'querystring';
 import { DynamoDB } from 'aws-sdk';
 import * as request from 'request';
 import * as moment from 'moment';
@@ -52,12 +51,82 @@ const requestAsync = (options) => {
 };
 
 export const get: APIGatewayProxyHandler = async (event, _context) => {
+
+    const tasks = await Promise.all([
+        getMcsrvStatus(),
+        getdbPlayersCount(),
+        getdbServerStatus()
+    ]);
     
-    const res = await getMcsrvStatus();
+    const mcsrv = tasks[0];
+    const dbCount = tasks[1];
+    const dbStatus = tasks[2];
+
+    if (dbStatus.status == ServerStatus.Stopped)
+    {
+        if (mcsrv.isAliving)
+        {
+            await reportError(
+                'サーバーの状態がStoppedなのにMcsrvが生きてます。\n' +
+                'mcsrv: ' + JSON.stringify(mcsrv) + '\n' +
+                'db: ' + JSON.stringify(dbStatus) + '\n'
+            );
+        }
+    }
+
+    if (dbStatus.status == ServerStatus.Starting)
+    {
+        if (mcsrv.status != McsrvStatus.Running && dbStatus.status == ServerStatus.Starting)
+        {
+            if (Math.abs(dbStatus.updatedDateTime.diff(moment(), "minutes")) > 4)
+            {
+                await reportError(
+                    'サーバーがなかなか起動しません。\n' +
+                    'mcsrv: ' + JSON.stringify(mcsrv) + '\n' +
+                    'db: ' + JSON.stringify(dbStatus) + '\n'
+                );
+            }
+        }
+
+        if (mcsrv.status == McsrvStatus.Running)
+        {
+            await setdbServerStatus(ServerStatus.Running);
+        }
+    }
+
+    if (dbStatus.status == ServerStatus.Running)
+    {
+        if (mcsrv.count == 0 && Math.abs(dbStatus.updatedDateTime.diff(moment(), 'minutes')) > 10)
+        {
+            await Promise.all([requestMcsrvShutdown(), setdbServerStatus(ServerStatus.Stopping)]);
+        }
+
+        if (mcsrv.count != dbCount.count)
+        {
+            await setdbPlayersCount(mcsrv.count);
+        }
+    }
+
+    if (dbStatus.status == ServerStatus.Stopping)
+    {
+        if (Math.abs(dbStatus.updatedDateTime.diff(moment(), 'minutes')) > 3 && mcsrv.isAliving)
+        {
+            await reportError(
+                'サーバーがなかなか終了しません。\n' +
+                'mcsrv: ' + JSON.stringify(mcsrv) + '\n' +
+                'db: ' + JSON.stringify(dbStatus) + '\n'
+            );
+        }
+
+        if (Math.abs(dbStatus.updatedDateTime.diff(moment(), 'minutes')) > 3)
+        {
+            await Promise.all([shutdownMcsrv(), setdbServerStatus(ServerStatus.Stopped)]);
+        }
+    }
 
     return {
-        statusCode: 200,
-        body: JSON.stringify(res)
+        statusCode: 204,
+        body: ''
     };
 };
 
@@ -180,3 +249,15 @@ const getMcsrvStatus = async ():Promise<{isAliving: boolean, count: number | nul
         status: null
     };
 };
+
+const reportError = async (message: string) => {
+    
+};
+
+const shutdownMcsrv = async() => {
+
+};
+
+const requestMcsrvShutdown = async () => {
+
+}
