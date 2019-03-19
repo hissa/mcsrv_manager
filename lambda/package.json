@@ -4,15 +4,20 @@
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register ./tests.ts"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
     "@types/moment": "^2.13.0",
     "@types/request": "^2.48.1",
     "aws-sdk": "^2.422.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
     "moment": "^2.24.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "ts-node": "^8.0.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",

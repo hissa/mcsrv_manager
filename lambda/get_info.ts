@@ -2,21 +2,8 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import * as request from 'request';
 import * as moment from 'moment';
-
-enum ServerStatus
-{
-    Stopped,
-    Starting,
-    Running,
-    Stopping
-};
-
-enum McsrvStatus
-{
-    Starting,
-    Running,
-    Stopping
-};
+import { McsrvStatus } from './mcsrv';
+import { ServerStatus } from './server';
 
 const textStatusTable = {
     'stopped': ServerStatus.Stopped,
