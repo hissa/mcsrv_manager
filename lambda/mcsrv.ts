@@ -38,6 +38,13 @@ export class AlivingMcsrv extends Mcsrv
     private _count: number;
     private _status: McsrvStatus;
 
+    constructor(provider: IMcsrvProvider, count: number, status: McsrvStatus)
+    {
+        super(provider);
+        this._count = count;
+        this._status = status;
+    }
+
     get isAliving()
     {
         return true;
