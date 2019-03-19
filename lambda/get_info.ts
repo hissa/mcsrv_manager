@@ -259,5 +259,13 @@ const shutdownMcsrv = async() => {
 };
 
 const requestMcsrvShutdown = async () => {
-
+    const url = process.env.SRV_URL;
+    const options = {
+        url: url,
+        method: 'DELETE',
+        json: true,
+        timeout: 1000
+    };
+    
+    await requestAsync(options);
 }
