@@ -1,7 +1,6 @@
 import { IMcsrvProvider } from "./dependencies";
 import { Mcsrv, McsrvStatus, NotAlivingMcsrv, AlivingMcsrv } from "./mcsrv";
-import { requestAsync } from "./requestAsync";
-import { readdirSync } from "fs";
+import * as requestAsync from "./requestAsync";
 
 export class McsrvProvider implements IMcsrvProvider
 {
@@ -27,15 +26,13 @@ export class McsrvProvider implements IMcsrvProvider
     {
         const url = process.env.SRV_URL;
         const options = {
-            url: url,
-            method: 'DELETE',
             json: true,
             timeout: 1000
         };
 
         try
         {
-            await requestAsync(options);
+            await requestAsync.deleteAsync(url, options);
         }
         catch (e)
         {
@@ -55,16 +52,14 @@ export class McsrvProvider implements IMcsrvProvider
     {
         const url = process.env.SRV_URL;
         const options = {
-            url: url,
-            method: 'GET',
             json: true,
             timeout: 1000
         };
         
-        let result;
         try
         {
-            result = await requestAsync(options);
+            const result: any = await requestAsync.getAsync(url, options);
+            return new AlivingMcsrv(this, result.count, McsrvProvider.textMcsrvStatusTable[result.state]);
         }
         catch (e)
         {
@@ -76,7 +71,6 @@ export class McsrvProvider implements IMcsrvProvider
             throw e;
         }
         
-        return new AlivingMcsrv(this, result.count, McsrvProvider.textMcsrvStatusTable[result.state]);
     }
 }
 
