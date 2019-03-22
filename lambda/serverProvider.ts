@@ -32,12 +32,55 @@ export class ServerProvider implements IServerProvider
 
     public async setStatus(status: ServerStatus)
     {
-        throw new Error('Not implemented.');
+        const client = new DynamoDB.DocumentClient();
+        let text = null;
+        switch (status)
+        {
+            case ServerStatus.Stopped:
+                text = 'stopped';
+                break;
+            case ServerStatus.Starting:
+                text = 'starting';
+                break;
+            case ServerStatus.Running:
+                text = 'running';
+                break;
+            case ServerStatus.Stopping:
+                text = 'stopping';
+                break;
+        }
+
+        await client.update({
+            TableName: this.tableName,
+            Key: { status_id: 'server_status' },
+            ExpressionAttributeNames: {
+                '#v': 'value',
+                '#dt': 'updated_datetime'
+            },
+            ExpressionAttributeValues: {
+                ':val': text,
+                ':upddt': moment().format('YYYY-MM-DD HH:mm:ss')
+            },
+            UpdateExpression: 'SET #v = :val, #dt = :upddt'
+        }).promise();
     }
 
     public async setCount(count: number)
     {
-        throw new Error('Not implemented.');
+        const client = new DynamoDB.DocumentClient();
+        await client.update({
+            TableName: this.tableName,
+            Key: { status_id: 'players_count' },
+            ExpressionAttributeNames: {
+                '#v': 'value',
+                '#dt': 'updated_datetime'
+            },
+            ExpressionAttributeValues: {
+                ':val': count,
+                ':upddt': moment().format('YYYY-MM-DD HH:mm:ss')
+            },
+            UpdateExpression: 'SET #v = :val, #dt = :upddt'
+        }).promise();
     }
 
     public async reportError(mcsrv: Mcsrv, server: Server, msg: string)
