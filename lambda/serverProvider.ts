@@ -30,6 +30,16 @@ export class ServerProvider implements IServerProvider
         return new Server(this, status.status, count.count, status.updatedDateTime, count.updatedDateTime);
     }
 
+    public async setStatus(status: ServerStatus)
+    {
+        throw new Error('Not implemented.');
+    }
+
+    public async setCount(count: number)
+    {
+        throw new Error('Not implemented.');
+    }
+
     public async reportError(mcsrv: Mcsrv, server: Server, msg: string)
     {
         const mcsrvStr = JSON.stringify(mcsrv);
