@@ -1,5 +1,7 @@
 import { IMcsrvProvider } from "./dependencies";
-import { Mcsrv, McsrvStatus } from "./mcsrv";
+import { Mcsrv, McsrvStatus, NotAlivingMcsrv, AlivingMcsrv } from "./mcsrv";
+import { requestAsync } from "./requestAsync";
+import { readdirSync } from "fs";
 
 export class McsrvProvider implements IMcsrvProvider
 {
@@ -21,9 +23,27 @@ export class McsrvProvider implements IMcsrvProvider
         throw new Error('Not implemented.');
     }
 
-    public stop()
+    public async stop()
     {
-        throw new Error('Not implemented.');
+        const url = process.env.SRV_URL;
+        const options = {
+            url: url,
+            method: 'DELETE',
+            json: true,
+            timeout: 1000
+        };
+
+        try
+        {
+            await requestAsync(options);
+        }
+        catch (e)
+        {
+            if (e.code == 'ETIMEDOUT')
+            {
+                console.error('終了命令の応答がありません。');
+            }
+        }
     }
 
     public shutdown()
@@ -31,9 +51,32 @@ export class McsrvProvider implements IMcsrvProvider
         throw new Error('Not implemented.');
     }
 
-    public fetch(): Promise<Mcsrv>
+    public async fetch(): Promise<Mcsrv>
     {
-        throw new Error('Not implemented.');
+        const url = process.env.SRV_URL;
+        const options = {
+            url: url,
+            method: 'GET',
+            json: true,
+            timeout: 1000
+        };
+        
+        let result;
+        try
+        {
+            result = await requestAsync(options);
+        }
+        catch (e)
+        {
+            if (e.code == 'ETIMEDOUT')
+            {
+                return new NotAlivingMcsrv(this);
+            }
+
+            throw e;
+        }
+        
+        return new AlivingMcsrv(this, result.count, McsrvProvider.textMcsrvStatusTable[result.state]);
     }
 }
 
