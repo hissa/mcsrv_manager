@@ -419,7 +419,7 @@ describe('Server action tests', () => {
                 moment().subtract(9, 'minutes')
             );
 
-            srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Starting));
+            srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Running));
             chai.assert.deepEqual(actual, expected);
         });
 
@@ -441,7 +441,7 @@ describe('Server action tests', () => {
                 moment().subtract(11, 'minutes')
             );
 
-            srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Starting));
+            srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Running));
             chai.assert.deepEqual(actual, expected);
         });
 
@@ -462,7 +462,7 @@ describe('Server action tests', () => {
                 moment()
             );
 
-            srv.update(new AlivingMcsrv(mcProvider, 1, McsrvStatus.Starting));
+            srv.update(new AlivingMcsrv(mcProvider, 1, McsrvStatus.Running));
             chai.assert.deepEqual(actual, expected);
         });
 
@@ -565,8 +565,8 @@ describe('Server action tests', () => {
                 srvProvider,
                 ServerStatus.Stopping,
                 0,
-                moment(),
-                moment().subtract(4, 'minutes')
+                moment().subtract(4, 'minutes'),
+                moment()
             );
 
             srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Stopping));
@@ -586,8 +586,8 @@ describe('Server action tests', () => {
                 srvProvider,
                 ServerStatus.Stopping,
                 0,
-                moment(),
-                moment().subtract(6, 'minutes')
+                moment().subtract(6, 'minutes'),
+                moment()
             );
 
             srv.update(new AlivingMcsrv(mcProvider, 0, McsrvStatus.Stopping));

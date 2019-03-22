@@ -64,11 +64,6 @@ export class AlivingMcsrv extends Mcsrv
     {
         this.mcsrvProvider.stop();
     }
-
-    public shutdown()
-    {
-        this.mcsrvProvider.shutdown();
-    }
 }
 
 export class NotAlivingMcsrv extends Mcsrv
@@ -81,5 +76,10 @@ export class NotAlivingMcsrv extends Mcsrv
     public start()
     {
         this.mcsrvProvider.start();
+    }
+
+    public shutdown()
+    {
+        this.mcsrvProvider.shutdown();
     }
 }
