@@ -19,16 +19,15 @@ provider:
 functions:
   hello:
     handler: handler.hello
-    events:
+    environment: ${file(./secret.yml):environment}
+    events: 
       - http:
           method: get
           path: /
           integration: lambda
   get-info:
     handler: get_info.get
-    environment:
-      TZ: 'Asia/Tokyo'
-      SRV_URL: 'http://18.182.15.11:3000'
+    environment: ${file(./secret.yml):environment}
     events:
       - http:
           method: get
