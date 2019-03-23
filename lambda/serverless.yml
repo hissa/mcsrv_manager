@@ -33,6 +33,13 @@ functions:
           method: get
           path: /server
           integration: lambda
+  update:
+    handler: handler.update
+    environment: ${file(./secret.yml):environment}
+    events:
+      - schedule:
+        rate: rate(5 minutes)
+        enabled: false
 
 resources:
   Resources:
