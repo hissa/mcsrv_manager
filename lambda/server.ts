@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import { Mcsrv, McsrvStatus } from "./mcsrv";
-import { ServerProvider } from "./serverProvider";
 import { IServerProvider } from "./dependencies";
 
 export enum ServerStatus
@@ -13,6 +12,8 @@ export enum ServerStatus
 
 export class Server
 {
+    private _isInitialized = false;
+
     private _status: ServerStatus;
     private _count: number;
 
@@ -20,30 +21,16 @@ export class Server
     private _countLastUpdate: moment.Moment;
 
     private state: ServerState;
-    private provider: ServerProvider;
+    private provider: IServerProvider;
 
-    constructor(provider: IServerProvider, status: ServerStatus, count: number, statusLastUpdate: moment.Moment, countLastUpdate: moment.Moment)
+    constructor(provider: IServerProvider)
     {
-        this._status = status;
-        this._count = count;
-        this._statusLastUpdate = statusLastUpdate;
-        this._countLastUpdate = countLastUpdate;
+        this.provider = provider;
+    }
 
-        switch (this._status)
-        {
-            case ServerStatus.Stopped:
-                this.state = new ServerStopped(this, provider);
-                break;
-            case ServerStatus.Starting:
-                this.state = new ServerStarting(this, provider);
-                break;
-            case ServerStatus.Running:
-                this.state = new ServerRunning(this, provider);
-                break;
-            case ServerStatus.Stopping:
-                this.state = new ServerStopping(this, provider);
-                break;
-        }
+    get isInitialized()
+    {
+        return this._isInitialized;
     }
 
     get status()
@@ -76,9 +63,49 @@ export class Server
         return Math.abs(this._countLastUpdate.diff(moment(), 'minutes'));
     }
 
+    public async initialize()
+    {
+        const info = await this.provider.fetch();
+        this._status = info.status;
+        this._count = info.count;
+        this._statusLastUpdate = info.statusUpdatedDateTime;
+        this._countLastUpdate = info.countUpdatedDateTime;
+        this._isInitialized = true;
+        this.setState();
+    }
+
+    public customInitialize(status: ServerStatus, count: number, statusLastUpdate: moment.Moment, countLastUpdate: moment.Moment)
+    {
+        this._status = status;
+        this._count = count;
+        this._statusLastUpdate = statusLastUpdate;
+        this._countLastUpdate = countLastUpdate;
+        this._isInitialized = true;
+        this.setState();
+    }
+
     public async update(mcsrv: Mcsrv)
     {
         await this.state.update(mcsrv);
+    }
+
+    private setState()
+    {
+        switch (this._status)
+        {
+            case ServerStatus.Stopped:
+                this.state = new ServerStopped(this, this.provider);
+                break;
+            case ServerStatus.Starting:
+                this.state = new ServerStarting(this, this.provider);
+                break;
+            case ServerStatus.Running:
+                this.state = new ServerRunning(this, this.provider);
+                break;
+            case ServerStatus.Stopping:
+                this.state = new ServerStopping(this, this.provider);
+                break;
+        }
     }
 }
 

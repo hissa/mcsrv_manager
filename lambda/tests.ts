@@ -12,9 +12,14 @@ class MockServerProvider implements di.IServerProvider
     public setStatusDelegate = (status: ServerStatus) => {};
     public setCountDelegate = (count: number) => {};
 
-    public async fetch(): Promise<Server>
+    public async fetch(): Promise<di.ServerInformation>
     {
-        return new Server(this, ServerStatus.Stopped, 0, moment(), moment());
+        return {
+            status: ServerStatus.Stopped,
+            count: 0,
+            statusUpdatedDateTime: moment(),
+            countUpdatedDateTime: moment()
+        };
     }
 
     public async reportError(mcsrv: Mcsrv, srv: Server, msg: string)
@@ -110,8 +115,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopped,
                 0,
                 moment(),
@@ -132,8 +137,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopped,
                 0,
                 moment(),
@@ -154,8 +159,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopped,
                 0,
                 moment(),
@@ -176,8 +181,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopped,
                 0,
                 moment(),
@@ -199,8 +204,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment().subtract(4, 'minutes'),
@@ -221,8 +226,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment().subtract(6, 'minutes'),
@@ -241,8 +246,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment().subtract(4, 'minutes'),
@@ -263,8 +268,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment().subtract(6, 'minutes'),
@@ -285,8 +290,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment(),
@@ -307,8 +312,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Starting,
                 0,
                 moment(),
@@ -330,8 +335,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -351,8 +356,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -371,8 +376,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 1,
                 moment(),
@@ -391,8 +396,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 1,
                 moment(),
@@ -411,8 +416,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -433,8 +438,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -454,8 +459,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -475,8 +480,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Running,
                 0,
                 moment(),
@@ -499,8 +504,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopping,
                 0,
                 moment(),
@@ -520,8 +525,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopping,
                 0,
                 moment(),
@@ -541,8 +546,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopping,
                 0,
                 moment(),
@@ -561,8 +566,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopping,
                 0,
                 moment().subtract(4, 'minutes'),
@@ -582,8 +587,8 @@ describe('Server action tests', () => {
             const srvProvider = new MockServerProvider();
             setFunctionsObjectToDelegate(mcProvider, srvProvider, actual);
 
-            const srv = new Server(
-                srvProvider,
+            const srv = new Server(srvProvider);
+            srv.customInitialize(
                 ServerStatus.Stopping,
                 0,
                 moment().subtract(6, 'minutes'),

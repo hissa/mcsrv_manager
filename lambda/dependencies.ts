@@ -1,5 +1,6 @@
 import { Mcsrv } from "./mcsrv";
 import { Server, ServerStatus } from "./server";
+import * as moment from "moment";
 
 export interface IMcsrvProvider
 {
@@ -11,8 +12,15 @@ export interface IMcsrvProvider
 
 export interface IServerProvider
 {
-    fetch(): Promise<Server>;
+    fetch(): Promise<ServerInformation>;
     reportError(mcsrv: Mcsrv, server: Server, msg: string): void;
     setStatus(status: ServerStatus): void;
     setCount(count: number): void;
+}
+
+export interface ServerInformation {
+    status: ServerStatus,
+    count: number,
+    statusUpdatedDateTime: moment.Moment,
+    countUpdatedDateTime: moment.Moment
 }

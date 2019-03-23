@@ -3,6 +3,7 @@ import { Server, ServerStatus } from "./server";
 import { DynamoDB } from "aws-sdk";
 import * as moment from "moment";
 import { Mcsrv } from "./mcsrv";
+import * as di from "./dependencies";
 
 export class ServerProvider implements IServerProvider
 {
@@ -17,7 +18,7 @@ export class ServerProvider implements IServerProvider
     private client: DynamoDB.DocumentClient
         = new DynamoDB.DocumentClient();
 
-    public async fetch(): Promise<Server>
+    public async fetch(): Promise<di.ServerInformation>
     {
         const tasks = await Promise.all([
             this.fetchStatus(),
@@ -27,7 +28,12 @@ export class ServerProvider implements IServerProvider
         const status = tasks[0];
         const count = tasks[1];
 
-        return new Server(this, status.status, count.count, status.updatedDateTime, count.updatedDateTime);
+        return {
+            status: status.status,
+            count: count.count,
+            statusUpdatedDateTime: status.updatedDateTime,
+            countUpdatedDateTime: count.updatedDateTime
+        };
     }
 
     public async setStatus(status: ServerStatus)
