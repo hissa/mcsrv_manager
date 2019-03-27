@@ -31,6 +31,13 @@ export class Mcsrv
     {
         return !mcsrv.isAliving;
     }
+
+    public toObject()
+    {
+        return {
+            isAliving: this._isAliving
+        };
+    }
 }
 
 export class AlivingMcsrv extends Mcsrv
@@ -64,6 +71,15 @@ export class AlivingMcsrv extends Mcsrv
     {
         this.mcsrvProvider.stop();
     }
+
+    public toObject()
+    {
+        return {
+            isAliving: this._isAliving,
+            count: this._count,
+            status: this._status
+        };
+    }
 }
 
 export class NotAlivingMcsrv extends Mcsrv
@@ -81,5 +97,12 @@ export class NotAlivingMcsrv extends Mcsrv
     public shutdown()
     {
         this.mcsrvProvider.shutdown();
+    }
+
+    public toObject()
+    {
+        return {
+            isAliving: this._isAliving
+        };
     }
 }
