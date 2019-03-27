@@ -107,6 +107,16 @@ export class Server
                 break;
         }
     }
+
+    public toObject()
+    {
+        return {
+            status: this._status,
+            count: this._count,
+            statusLastUpdate: this._statusLastUpdate,
+            countLastUpdate: this._countLastUpdate
+        };
+    }
 }
 
 abstract class ServerState
