@@ -38,7 +38,7 @@ app.get('/alerts', (req, res) => {
 
 app.put('/', (req, res) => {
     count = req.body.count;
-    const targets = stateTexts.filter(i => i == req.body.count);
+    const targets = stateTexts.filter(i => i == req.body.state);
     
     if (targets.length > 0)
     {
