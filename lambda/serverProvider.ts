@@ -91,8 +91,8 @@ export class ServerProvider implements IServerProvider
 
     public async reportError(mcsrv: Mcsrv, server: Server, msg: string)
     {
-        const mcsrvStr = JSON.stringify(mcsrv);
-        const serverStr = JSON.stringify(server);
+        const mcsrvStr = JSON.stringify(mcsrv.toObject());
+        const serverStr = JSON.stringify(server.toObject());
         console.log(`mcsrv: ${mcsrvStr}\nserver: ${serverStr}\nmsg: ${msg}`);
     }
 
@@ -119,7 +119,7 @@ export class ServerProvider implements IServerProvider
             ExpressionAttributeValues: { ':idname': 'server_status' },
             KeyConditionExpression: '#id = :idname'
         }).promise();
-    
+        
         return {
             status: ServerProvider.textStatusTable[result.Items[0].value],
             updatedDateTime: moment(result.Items[0].updated_datetime)
