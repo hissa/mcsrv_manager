@@ -17,6 +17,11 @@ export const hello: APIGatewayProxyHandler = async (event, _context) => {
 export const update: CloudWatchLogsHandler = async (event, _context) => {
     const mcsrvProvider = new McsrvProvider();
     const serverProvider = new ServerProvider();
-
-    
+    const server = new Server(serverProvider);
+    const tasks = await Promise.all([
+        server.initialize(),
+        mcsrvProvider.fetch()
+    ]);
+    const mcsrv = tasks[1];
+    await server.update(mcsrv);
 };
