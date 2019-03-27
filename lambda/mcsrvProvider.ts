@@ -54,14 +54,12 @@ export class McsrvProvider implements IMcsrvProvider
         const url = process.env.HOST_URL + `/server/${srvId}/power`;
         const user = process.env.SAKURA_TOKEN;
         const secret = process.env.SAKURA_SECRET;
-
         await requestAsync.deleteAsync(url, {
             json: true,
             timeout: 1000,
             auth: {
                 user: user,
                 pass: secret,
-                sendImmediately: false
             }
         });
     }
@@ -80,14 +78,8 @@ export class McsrvProvider implements IMcsrvProvider
         }
         catch (e)
         {
-            if (e.code == 'ETIMEDOUT')
-            {
-                return new NotAlivingMcsrv(this);
-            }
-
-            throw e;
+            return new NotAlivingMcsrv(this);
         }
-        
     }
 }
 
