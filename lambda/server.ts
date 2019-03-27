@@ -181,7 +181,7 @@ class ServerRunning extends ServerState
         {
             if (this.server.count != mcsrv.count)
             {
-                this.provider.setCount(mcsrv.count);
+                await this.provider.setCount(mcsrv.count);
             }
 
             if (mcsrv.count > 0)
